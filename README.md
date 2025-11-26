@@ -11,12 +11,14 @@ API RESTful desarrollada en .NET 8 con CI/CD automatizado a Azure, siguiendo esp
 ## 🚀 Características
 
 ### Arquitectura y Patrones
+
 - ✅ **Clean Architecture** (Repository + Service Pattern)
 - ✅ **DTOs** con AutoMapper para separación de capas
 - ✅ **Dependency Injection** en toda la aplicación
 - ✅ **JSend Specification** para respuestas HTTP estandarizadas
 
 ### Calidad y Testing
+
 - ✅ **Tests Unitarios** con NUnit + Moq (>70% cobertura)
 - ✅ **FluentValidation** para validaciones declarativas
 - ✅ **CI/CD** automatizado con GitHub Actions
@@ -24,6 +26,7 @@ API RESTful desarrollada en .NET 8 con CI/CD automatizado a Azure, siguiendo esp
 - ✅ **Pipeline**: Build → Test → Deploy
 
 ### Seguridad y Configuración
+
 - ✅ **Variables de Entorno** con DotNetEnv
 - ✅ **Rate Limiting** (100 req/min) para protección DoS
 - ✅ **CORS** configurado para frontend
@@ -31,6 +34,7 @@ API RESTful desarrollada en .NET 8 con CI/CD automatizado a Azure, siguiendo esp
 - ✅ **Secrets Management** con GitHub Secrets
 
 ### Funcionalidades
+
 - ✅ **CRUD completo** de libros
 - ✅ **Paginación** en listados
 - ✅ **Logging estructurado** con Serilog
@@ -43,6 +47,7 @@ API RESTful desarrollada en .NET 8 con CI/CD automatizado a Azure, siguiendo esp
 ## 🛠️ Stack Tecnológico
 
 ### Backend
+
 - **Framework**: .NET 8.0
 - **ORM**: Entity Framework Core 9.0
 - **Validación**: FluentValidation 11.3.0
@@ -50,25 +55,30 @@ API RESTful desarrollada en .NET 8 con CI/CD automatizado a Azure, siguiendo esp
 - **Logging**: Serilog 8.0.0
 
 ### Base de Datos
+
 - **Azure SQL Database** (PaaS)
 - **Conexión**: Variables de entorno con DotNetEnv 3.1.1
 
 ### Testing
+
 - **Framework**: NUnit 3.14.0
 - **Mocking**: Moq 4.20.72
 - **Coverage**: XPlat Code Coverage + ReportGenerator
 
 ### DevOps & Cloud
+
 - **Cloud Provider**: Microsoft Azure
 - **Hosting**: Azure App Service (Chile Central)
 - **CI/CD**: GitHub Actions
 - **Deployment**: Automatizado en cada push a master
 
 ### Documentación
+
 - **API Docs**: Swagger/OpenAPI 3.0
 - **Package**: Swashbuckle.AspNetCore 6.6.2
 
 ### Seguridad & Monitoreo
+
 - **Health Checks**: AspNetCore.HealthChecks.SqlServer
 - **Rate Limiting**: ASP.NET Core Rate Limiting
 - **Environment Variables**: DotNetEnv 3.1.1
@@ -79,14 +89,15 @@ API RESTful desarrollada en .NET 8 con CI/CD automatizado a Azure, siguiendo esp
 
 ### Infraestructura
 
-| Componente | Servicio Azure | Región |
-|------------|----------------|--------|
-| **API** | Azure App Service | Chile Central |
+| Componente        | Servicio Azure     | Región        |
+| ----------------- | ------------------ | ------------- |
+| **API**           | Azure App Service  | Chile Central |
 | **Base de Datos** | Azure SQL Database | Chile Central |
-| **Plan** | Free/Student | F1 |
-| **Runtime** | .NET 8.0 | Windows |
+| **Plan**          | Free/Student       | F1            |
+| **Runtime**       | .NET 8.0           | Windows       |
 
 ### URL de Producción
+
 - **Base URL**: https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net
 - **Swagger UI**: https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net/swagger/index.html
 - **Health Check**: https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net/health
@@ -141,35 +152,40 @@ Configuradas en Azure App Service → Configuration → Application settings:
 ## 📡 Endpoints de la API
 
 ### Base URL
+
 ```
 https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net
 ```
 
 ### Documentación y Estado
-| Endpoint | Método | Descripción |
-|----------|--------|-------------|
-| `/` | GET | Información de la API (JSend) |
-| `/status` | GET | Estado del servidor (JSend) |
-| `/health` | GET | Health check de servicios |
-| `/swagger` | GET | Documentación interactiva |
+
+| Endpoint   | Método | Descripción                   |
+| ---------- | ------ | ----------------------------- |
+| `/`        | GET    | Información de la API (JSend) |
+| `/status`  | GET    | Estado del servidor (JSend)   |
+| `/health`  | GET    | Health check de servicios     |
+| `/swagger` | GET    | Documentación interactiva     |
 
 ### Gestión de Libros (CRUD)
-| Endpoint | Método | Descripción | Formato |
-|----------|--------|-------------|---------|
-| `/api/Libros` | GET | Listar libros (paginado) | JSend |
-| `/api/Libros/{id}` | GET | Obtener libro por ID | JSend |
-| `/api/Libros` | POST | Crear nuevo libro | JSend |
-| `/api/Libros/{id}` | PUT | Actualizar libro | JSend |
-| `/api/Libros/{id}` | DELETE | Eliminar libro | JSend |
+
+| Endpoint           | Método | Descripción              | Formato |
+| ------------------ | ------ | ------------------------ | ------- |
+| `/api/Libros`      | GET    | Listar libros (paginado) | JSend   |
+| `/api/Libros/{id}` | GET    | Obtener libro por ID     | JSend   |
+| `/api/Libros`      | POST   | Crear nuevo libro        | JSend   |
+| `/api/Libros/{id}` | PUT    | Actualizar libro         | JSend   |
+| `/api/Libros/{id}` | DELETE | Eliminar libro           | JSend   |
 
 ### Ejemplos de Uso en Producción
 
 #### Listar libros con paginación
+
 ```bash
 curl "https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net/api/Libros?page=1&pageSize=10"
 ```
 
 **Respuesta JSend:**
+
 ```json
 {
   "status": "success",
@@ -194,6 +210,7 @@ curl "https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net/api/Lib
 ```
 
 #### Crear un libro
+
 ```bash
 curl -X POST "https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net/api/Libros" \
   -H "Content-Type: application/json" \
@@ -206,6 +223,7 @@ curl -X POST "https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net
 ```
 
 **Respuesta JSend (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -220,6 +238,7 @@ curl -X POST "https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net
 ```
 
 #### Obtener información de la API
+
 ```bash
 curl "https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net/"
 ```
@@ -231,6 +250,7 @@ curl "https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net/"
 Todas las respuestas de la API siguen el estándar [JSend](https://github.com/omniti-labs/jsend):
 
 ### Success (2xx)
+
 ```json
 {
   "status": "success",
@@ -239,6 +259,7 @@ Todas las respuestas de la API siguen el estándar [JSend](https://github.com/om
 ```
 
 ### Fail - Validación (4xx)
+
 ```json
 {
   "status": "fail",
@@ -250,6 +271,7 @@ Todas las respuestas de la API siguen el estándar [JSend](https://github.com/om
 ```
 
 ### Error - Servidor (5xx)
+
 ```json
 {
   "status": "error",
@@ -264,11 +286,11 @@ Todas las respuestas de la API siguen el estándar [JSend](https://github.com/om
 
 ### Tests Implementados
 
-| Tipo | Proyecto | Framework | Cobertura |
-|------|----------|-----------|-----------|
-| Unitarios | Controller | NUnit + Moq | >70% |
-| Unitarios | Service | NUnit + Moq | >70% |
-| Integración | Repository | NUnit + InMemory DB | >70% |
+| Tipo        | Proyecto   | Framework           | Cobertura |
+| ----------- | ---------- | ------------------- | --------- |
+| Unitarios   | Controller | NUnit + Moq         | >70%      |
+| Unitarios   | Service    | NUnit + Moq         | >70%      |
+| Integración | Repository | NUnit + InMemory DB | >70%      |
 
 ### Ejecutar Tests Localmente
 
@@ -287,6 +309,7 @@ reportgenerator -reports:TestResults/**/coverage.cobertura.xml -targetdir:TestRe
 ### Code Coverage en CI/CD
 
 Cada push a master genera automáticamente:
+
 - ✅ Test Results (.trx)
 - ✅ Coverage Report (HTML)
 - ✅ Artifacts descargables en GitHub Actions
@@ -357,9 +380,13 @@ APINet/
 │   └── Program.cs                 # Startup & Configuration
 │
 ├── Test/                          # Proyecto de Tests
+│   ├── GlobalExceptionHandlerTests.cs
+│   ├── HomeControllerTests.cs
+│   ├── LibroRepositoryTests.cs
 │   ├── LibrosControllerTests.cs
 │   ├── LibroServiceTests.cs
-│   └── LibroRepositoryTests.cs
+│   ├── MappingTests.cs
+│   └── ValidatorsTests.cs
 │
 └── .github/
     └── workflows/
@@ -371,25 +398,30 @@ APINet/
 ## 🔧 Características Técnicas Destacadas
 
 ### 1. JSend Standard
+
 - Respuestas HTTP estandarizadas
 - 3 tipos: `success`, `fail`, `error`
 - Facilita integración con frontend
 
 ### 2. Paginación
+
 - Parámetros: `?page=1&pageSize=10`
 - Metadatos: totalCount, totalPages, hasNext, hasPrevious
 - Performance optimizada para grandes datasets
 
 ### 3. Exception Handling Global
+
 - Middleware centralizado
 - Mapeo de excepciones a códigos HTTP
 - Respuestas JSend consistentes
 
 ### 4. Validaciones en Capas
+
 - **FluentValidation**: Validaciones de entrada (Controller)
 - **Service**: Lógica de negocio (duplicados, reglas complejas)
 
 ### 5. Seguridad
+
 - Rate Limiting (100 req/min)
 - CORS configurado
 - Variables de entorno protegidas
@@ -400,17 +432,20 @@ APINet/
 ## 📊 Monitoreo en Producción
 
 ### Health Checks
+
 ```bash
 curl https://api-net-aebffhgchrgpf5bm.chilecentral-01.azurewebsites.net/health
 ```
 
 ### Application Insights (Azure)
+
 - Disponibilidad
 - Performance
 - Excepciones
 - Request rate
 
 ### Logs
+
 - **Serilog** configurado
 - Output: Console + Archivos
 - Logs estructurados en JSON
@@ -448,6 +483,6 @@ Este proyecto fue desarrollado como parte del curso de **Calidad de Software** e
 
 ---
 
-⭐ **Proyecto Académico - UPN 2024** ⭐
+⭐ **Proyecto Académico - UPN 2025** ⭐
 
-*Desarrollado con .NET 8, Azure, GitHub Actions y las mejores prácticas de Calidad de Software*
+_Desarrollado con .NET 8, Azure, GitHub Actions y las mejores prácticas de Calidad de Software_

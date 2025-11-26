@@ -100,5 +100,91 @@ namespace Tests
             Assert.That(ex.Message, Is.EqualTo("El Id debe ser mayor a cero."));
         }
 
+        [Test]
+        public async Task ObtenerPorId_DeberiaRetornarLibro_CuandoExiste()
+        {
+            // Arrange
+            var libro = new Libro { Id = 1, Titulo = "Test", Autor = "Autor", Anio = 2000, Genero = "Drama" };
+            _repoMock.Setup(r => r.ObtenerPorIdAsync(1)).ReturnsAsync(libro);
+
+            // Act
+            var resultado = await _service.ObtenerPorId(1);
+
+            // Assert
+            Assert.That(resultado, Is.Not.Null);
+            Assert.That(resultado.Id, Is.EqualTo(1));
+            Assert.That(resultado.Titulo, Is.EqualTo("Test"));
+        }
+
+        [Test]
+        public void ObtenerPorId_DeberiaLanzarKeyNotFoundException_CuandoNoExiste()
+        {
+            // Arrange
+            _repoMock.Setup(r => r.ObtenerPorIdAsync(999)).ReturnsAsync((Libro?)null);
+
+            // Act & Assert
+            var ex = Assert.ThrowsAsync<KeyNotFoundException>(() => _service.ObtenerPorId(999));
+            Assert.That(ex.Message, Is.EqualTo("No se encontró un libro con Id 999."));
+        }
+
+        [Test]
+        public async Task Actualizar_DeberiaActualizarLibro_Exitoso()
+        {
+            // Arrange
+            var libro = new Libro { Id = 1, Titulo = "Actualizado", Autor = "Autor", Anio = 2000, Genero = "Drama" };
+            _repoMock.Setup(r => r.ObtenerPorIdAsync(1)).ReturnsAsync(libro);
+            _repoMock.Setup(r => r.ObtenerTodosAsync()).ReturnsAsync(new List<Libro> { libro });
+            _repoMock.Setup(r => r.ActualizarAsync(libro)).ReturnsAsync(true);
+
+            // Act
+            var resultado = await _service.Actualizar(libro);
+
+            // Assert
+            Assert.That(resultado, Is.True);
+            _repoMock.Verify(r => r.ActualizarAsync(libro), Times.Once);
+        }
+
+        [Test]
+        public void Actualizar_DeberiaLanzarKeyNotFoundException_SiNoSeActualiza()
+        {
+            // Arrange
+            var libro = new Libro { Id = 999, Titulo = "No existe", Autor = "Autor", Anio = 2000, Genero = "Drama" };
+            _repoMock.Setup(r => r.ObtenerPorIdAsync(999)).ReturnsAsync((Libro?)null);
+
+            // Act & Assert
+            var ex = Assert.ThrowsAsync<KeyNotFoundException>(() => _service.Actualizar(libro));
+            Assert.That(ex.Message, Is.EqualTo("No se encontró un libro con Id 999."));
+        }
+
+        [Test]
+        public void Eliminar_DeberiaLanzarArgumentException_SiIdEsCero()
+        {
+            // Act & Assert
+            var ex = Assert.ThrowsAsync<ArgumentException>(() => _service.Eliminar(0));
+            Assert.That(ex.Message, Is.EqualTo("El Id debe ser mayor a cero."));
+        }
+
+        [Test]
+        public void Eliminar_DeberiaLanzarArgumentException_SiIdEsNegativo()
+        {
+            // Act & Assert
+            var ex = Assert.ThrowsAsync<ArgumentException>(() => _service.Eliminar(-1));
+            Assert.That(ex.Message, Is.EqualTo("El Id debe ser mayor a cero."));
+        }
+
+        [Test]
+        public async Task ObtenerTodos_DeberiaRetornarListaVacia_CuandoNoHayLibros()
+        {
+            // Arrange
+            _repoMock.Setup(r => r.ObtenerTodosAsync()).ReturnsAsync(new List<Libro>());
+
+            // Act
+            var resultado = await _service.ObtenerTodos();
+
+            // Assert
+            Assert.That(resultado, Is.Not.Null);
+            Assert.That(resultado, Is.Empty);
+        }
+
     }
 }

@@ -120,7 +120,7 @@ namespace Tests
             Assert.That(okResult.StatusCode, Is.EqualTo(200));
 
             // Verificar estructura JSend
-            var jsendResponse = okResult.Value as JSendResponse;
+            var jsendResponse = okResult.Value as JSendResponse<object>;
             Assert.That(jsendResponse, Is.Not.Null);
             Assert.That(jsendResponse.Status, Is.EqualTo("success"));
         }
@@ -140,7 +140,7 @@ namespace Tests
             Assert.That(badRequestResult.StatusCode, Is.EqualTo(400));
 
             // Verificar estructura JSend (fail)
-            var jsendResponse = badRequestResult.Value as JSendResponse;
+            var jsendResponse = badRequestResult.Value as JSendResponse<object>;
             Assert.That(jsendResponse, Is.Not.Null);
             Assert.That(jsendResponse.Status, Is.EqualTo("fail"));
         }
@@ -160,7 +160,7 @@ namespace Tests
             Assert.That(notFoundResult.StatusCode, Is.EqualTo(404));
 
             // Verificar estructura JSend (fail)
-            var jsendResponse = notFoundResult.Value as JSendResponse;
+            var jsendResponse = notFoundResult.Value as JSendResponse<object>;
             Assert.That(jsendResponse, Is.Not.Null);
             Assert.That(jsendResponse.Status, Is.EqualTo("fail"));
         }
@@ -180,9 +180,166 @@ namespace Tests
             Assert.That(okResult.StatusCode, Is.EqualTo(200));
 
             // Verificar estructura JSend (success)
-            var jsendResponse = okResult.Value as JSendResponse;
+            var jsendResponse = okResult.Value as JSendResponse<object>;
             Assert.That(jsendResponse, Is.Not.Null);
             Assert.That(jsendResponse.Status, Is.EqualTo("success"));
+        }
+
+        [Test]
+        public async Task GetLibro_DeberiaRetornarOk_ConFormatoJSend_SiLibroExiste()
+        {
+            // Arrange
+            var libro = new Libro { Id = 1, Titulo = "Test", Autor = "Autor", Anio = 2000, Genero = "Drama" };
+            var libroDto = new LibroResponseDto { Id = 1, Titulo = "Test", Autor = "Autor", Anio = 2000, Genero = "Drama" };
+
+            _serviceMock.Setup(s => s.ObtenerPorId(1)).ReturnsAsync(libro);
+            _mapperMock.Setup(m => m.Map<LibroResponseDto>(libro)).Returns(libroDto);
+
+            // Act
+            var resultado = await _controller.GetLibro(1);
+            var okResult = resultado.Result as OkObjectResult;
+
+            // Assert
+            Assert.That(okResult, Is.Not.Null);
+            Assert.That(okResult.StatusCode, Is.EqualTo(200));
+
+            var jsendResponse = okResult.Value as JSendResponse<LibroResponseDto>;
+            Assert.That(jsendResponse, Is.Not.Null);
+            Assert.That(jsendResponse.Status, Is.EqualTo("success"));
+            Assert.That(jsendResponse.Data?.Id, Is.EqualTo(1));
+        }
+
+        [Test]
+        public async Task GetLibros_DeberiaAplicarPaginacionCorrectamente()
+        {
+            // Arrange
+            var libros = new List<Libro>();
+            for (int i = 1; i <= 50; i++)
+            {
+                libros.Add(new Libro { Id = i, Titulo = $"Libro {i}", Autor = "Autor", Anio = 2000, Genero = "Drama" });
+            }
+
+            _serviceMock.Setup(s => s.ObtenerTodos()).ReturnsAsync(libros);
+            _mapperMock.Setup(m => m.Map<IEnumerable<LibroResponseDto>>(It.IsAny<IEnumerable<Libro>>()))
+                .Returns((IEnumerable<Libro> source) => source.Select(l => new LibroResponseDto
+                {
+                    Id = l.Id,
+                    Titulo = l.Titulo,
+                    Autor = l.Autor,
+                    Anio = l.Anio,
+                    Genero = l.Genero
+                }));
+
+            // Act
+            var resultado = await _controller.GetLibros(page: 2, pageSize: 10);
+            var okResult = resultado.Result as OkObjectResult;
+
+            // Assert
+            Assert.That(okResult, Is.Not.Null);
+            var jsendResponse = okResult.Value as JSendResponse<PagedResult<LibroResponseDto>>;
+            Assert.That(jsendResponse, Is.Not.Null);
+            Assert.That(jsendResponse.Data?.Items.Count(), Is.EqualTo(10));
+            Assert.That(jsendResponse.Data?.TotalCount, Is.EqualTo(50));
+            Assert.That(jsendResponse.Data?.Page, Is.EqualTo(2));
+        }
+
+        [Test]
+        public async Task GetLibros_DeberiaAjustarPageSiEsMenorQue1()
+        {
+            // Arrange
+            var libros = new List<Libro>
+            {
+                new Libro { Id = 1, Titulo = "Libro 1", Autor = "Autor 1", Anio = 2000, Genero = "Drama" }
+            };
+
+            _serviceMock.Setup(s => s.ObtenerTodos()).ReturnsAsync(libros);
+            _mapperMock.Setup(m => m.Map<IEnumerable<LibroResponseDto>>(It.IsAny<IEnumerable<Libro>>()))
+                .Returns(new List<LibroResponseDto>
+                {
+                    new LibroResponseDto { Id = 1, Titulo = "Libro 1", Autor = "Autor 1", Anio = 2000, Genero = "Drama" }
+                });
+
+            // Act
+            var resultado = await _controller.GetLibros(page: 0, pageSize: 10);
+            var okResult = resultado.Result as OkObjectResult;
+
+            // Assert
+            Assert.That(okResult, Is.Not.Null);
+            var jsendResponse = okResult.Value as JSendResponse<PagedResult<LibroResponseDto>>;
+            Assert.That(jsendResponse?.Data?.Page, Is.EqualTo(1));
+        }
+
+        [Test]
+        public async Task GetLibros_DeberiaAjustarPageSizeSiEsMenorQue1()
+        {
+            // Arrange
+            var libros = new List<Libro>
+            {
+                new Libro { Id = 1, Titulo = "Libro 1", Autor = "Autor 1", Anio = 2000, Genero = "Drama" }
+            };
+
+            _serviceMock.Setup(s => s.ObtenerTodos()).ReturnsAsync(libros);
+            _mapperMock.Setup(m => m.Map<IEnumerable<LibroResponseDto>>(It.IsAny<IEnumerable<Libro>>()))
+                .Returns(new List<LibroResponseDto>
+                {
+                    new LibroResponseDto { Id = 1, Titulo = "Libro 1", Autor = "Autor 1", Anio = 2000, Genero = "Drama" }
+                });
+
+            // Act
+            var resultado = await _controller.GetLibros(page: 1, pageSize: 0);
+            var okResult = resultado.Result as OkObjectResult;
+
+            // Assert
+            Assert.That(okResult, Is.Not.Null);
+            var jsendResponse = okResult.Value as JSendResponse<PagedResult<LibroResponseDto>>;
+            Assert.That(jsendResponse?.Data?.PageSize, Is.EqualTo(10));
+        }
+
+        [Test]
+        public async Task GetLibros_DeberiaLimitarPageSizeA100()
+        {
+            // Arrange
+            var libros = new List<Libro>
+            {
+                new Libro { Id = 1, Titulo = "Libro 1", Autor = "Autor 1", Anio = 2000, Genero = "Drama" }
+            };
+
+            _serviceMock.Setup(s => s.ObtenerTodos()).ReturnsAsync(libros);
+            _mapperMock.Setup(m => m.Map<IEnumerable<LibroResponseDto>>(It.IsAny<IEnumerable<Libro>>()))
+                .Returns(new List<LibroResponseDto>
+                {
+                    new LibroResponseDto { Id = 1, Titulo = "Libro 1", Autor = "Autor 1", Anio = 2000, Genero = "Drama" }
+                });
+
+            // Act
+            var resultado = await _controller.GetLibros(page: 1, pageSize: 200);
+            var okResult = resultado.Result as OkObjectResult;
+
+            // Assert
+            Assert.That(okResult, Is.Not.Null);
+            var jsendResponse = okResult.Value as JSendResponse<PagedResult<LibroResponseDto>>;
+            Assert.That(jsendResponse?.Data?.PageSize, Is.EqualTo(100));
+        }
+
+        [Test]
+        public async Task GetLibros_DeberiaRetornarListaVacia_SiNoHayLibros()
+        {
+            // Arrange
+            var libros = new List<Libro>();
+
+            _serviceMock.Setup(s => s.ObtenerTodos()).ReturnsAsync(libros);
+            _mapperMock.Setup(m => m.Map<IEnumerable<LibroResponseDto>>(It.IsAny<IEnumerable<Libro>>()))
+                .Returns(new List<LibroResponseDto>());
+
+            // Act
+            var resultado = await _controller.GetLibros(page: 1, pageSize: 10);
+            var okResult = resultado.Result as OkObjectResult;
+
+            // Assert
+            Assert.That(okResult, Is.Not.Null);
+            var jsendResponse = okResult.Value as JSendResponse<PagedResult<LibroResponseDto>>;
+            Assert.That(jsendResponse?.Data?.TotalCount, Is.EqualTo(0));
+            Assert.That(jsendResponse?.Data?.Items, Is.Empty);
         }
     }
 }
